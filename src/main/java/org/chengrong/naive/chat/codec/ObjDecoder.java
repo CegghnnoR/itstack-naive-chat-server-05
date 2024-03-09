@@ -28,6 +28,6 @@ public class ObjDecoder extends ByteToMessageDecoder {
         }
         byte[] data = new byte[dataLength];
         in.readBytes(data);
-        out.add(SerializationUtil)
+        out.add(SerializationUtil.deserialize(data, genericClass));
     }
 }

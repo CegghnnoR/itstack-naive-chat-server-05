@@ -19,7 +19,11 @@ public class SerializationUtil {
     }
 
     /**
-     * 序列化（对象->字节数组）
+     * 序列化
+     *
+     * @param obj 对象
+     * @return 字节数组
+     * @param <T>
      */
     public static <T> byte[] serialize(T obj) {
         Class<T> cls = (Class<T>) obj.getClass();
@@ -31,6 +35,26 @@ public class SerializationUtil {
             throw new IllegalStateException(e.getMessage(), e);
         } finally {
             buffer.clear();
+        }
+    }
+
+    /**
+     * 反序列化
+     * @param data
+     * @param cls
+     * @return
+     * @param <T>
+     */
+    public static <T> T deserialize(byte[] data, Class<T> cls) {
+        try {
+            // 使用Objenesis来创建cls指定类型的新实例，而不调用其任何构造函数。
+            // 这对于反序列化非常重要，尤其是当对象的构造函数包含有副作用或需要特定参数时。
+            T message = objenesis.newInstance(cls);
+            Schema<T> schema = getSchema(cls);
+            ProtostuffIOUtil.mergeFrom(data, message, schema);
+            return message;
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
